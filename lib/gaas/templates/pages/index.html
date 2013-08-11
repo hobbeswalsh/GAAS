@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>The Card Game</title>
+</head>
+<input type="button" value="Deck1" onClick='drawCard("{{game_id}}", "0")'>
+<input type="button" value="Deck2" onClick='drawCard("{{game_id}}", "1")'>
+<input type="button" value="Deck3" onClick='drawCard("{{game_id}}", "2")'>
+<input type="button" value="Deck4" onClick='drawCard("{{game_id}}", "3")'>
+
+<p>
+</p>
+<div id="intro">Hey there. Draw a card from any deck to begin playing.</div>
+<div visibility="hidden" id="winnings">No winnings so far.</div>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="/static/card.js"></script>
+
+</html>
