@@ -1,15 +1,25 @@
 import random
-import json
+
+from mongoengine import (
+    Document,
+    ListField,
+    IntField)
 
 
-class Deck(object):
+class Deck(Document):
+    meta = {"allow_inheritance": True}
+
     NUM_CARDS = 30
 
+    card_list = ListField(IntField())
+
     def __init__(self, card_list=[]):
+        super(Deck, self).__init__()
         self.card_list = card_list
         self.played_cards = []
         self._generate()
         self.shuffle()
+        self.save()
 
     def _generate(self):
         raise NotImplementedError
@@ -26,7 +36,7 @@ class Deck(object):
             return None
 
     def serialize(self):
-        return json.dumps(self.card_list)
+        return self.card_list
 
     @property
     def value(self):
@@ -50,6 +60,8 @@ class WinningDeck(Deck):
             good_cards = [int(random.triangular(35, 120, 75))
                           for i in range(self.NUM_CARDS / 2)]
             self.card_list = good_cards + bad_cards
+        self.save()
+
 
 
 class LosingDeck(Deck):
@@ -64,3 +76,5 @@ class LosingDeck(Deck):
             good_cards = [int(random.triangular(250, 900, 300))
                           for i in range(self.NUM_CARDS / 2)]
             self.card_list = good_cards + bad_cards
+
+        self.save()

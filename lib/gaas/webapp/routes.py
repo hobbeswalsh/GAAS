@@ -39,6 +39,7 @@ def create_routes():
     @app.route("/api/v1/game/<uuid>/play", methods=["POST"])
     def make_a_play(uuid):
         game = dal.get_game_by_uuid(uuid)
+        print game
         deck = int(request.values.get("deckNum"))
         chosen_card = game.make_play(deck)
         dal.save_game(game)

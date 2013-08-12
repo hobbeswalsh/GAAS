@@ -1,53 +1,53 @@
-import cPickle
+
+import mongoengine
+
+from . import game
 
 STORAGE = "/tmp/games.pickle"
 OUTCOMES = "/tmp/outcomes.pickle"
 
 
 def get_all_games():
-    try:
-        return cPickle.load(open(STORAGE))
-    except IOError:
-        return {}
-
+    return game.CardGame.objects()
 
 def get_game_by_uuid(uuid):
-    all_games = get_all_games()
-    return all_games.get(uuid)
-
-
-def save_all_games(all_games):
-    cPickle.dump(all_games, open(STORAGE, "w"))
+    return game.CardGame.objects(uuid=uuid).get()
 
 
 def save_game(game):
-    all_games = get_all_games()
-    all_games[game.uuid] = game
-    save_all_games(all_games)
+    game.save()
 
 
 def delete_game_by_uuid(uuid):
-    try:
-        all_games = get_all_games()
-        all_games.pop(uuid)
-        save_all_games(all_games)
-        return True
-    except KeyError:
-        return False
+    g = get_game_by_uuid(uuid)
+    g.delete()
+
+# def get_all_outcomes():
+#     try:
+#         return cPickle.load(open(OUTCOMES))
+#     except IOError:
+#         return []
 
 
-def get_all_outcomes():
-    try:
-        return cPickle.load(open(OUTCOMES))
-    except IOError:
-        return []
+# def save_all_outcomes(outcomes):
+#     cPickle.dump(outcomes, open(OUTCOMES, "w"))
 
 
-def save_all_outcomes(outcomes):
-    cPickle.dump(outcomes, open(OUTCOMES, "w"))
+# def save_game_outcome(adj):
+#     outcomes = get_all_outcomes()
+#     outcomes.append(adj)
+#     save_all_outcomes(outcomes)
 
 
-def save_game_outcome(adj):
-    outcomes = get_all_outcomes()
-    outcomes.append(adj)
-    save_all_outcomes(outcomes)
+def connect_to_db():
+    mongo_user = "restquest"
+    mongo_pass = "thoundon"
+    mongo_host = "ds037688.mongolab.com"
+    mongo_port = 37688
+    mongo_db = "rq_test"
+    mongoengine.connect(
+        mongo_db,
+        host=mongo_host,
+        port=mongo_port,
+        username=mongo_user,
+        password=mongo_pass)

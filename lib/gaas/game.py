@@ -2,13 +2,23 @@ import json
 import random
 from uuid import uuid4
 
-from . import dal
+from mongoengine import (
+    Document,
+    ReferenceField,
+    ListField,
+    StringField)
+
+# from . import dal
 from . import deck
 
 
-class CardGame(object):
+class CardGame(Document):
+
+    decks = ListField(ReferenceField("Deck"))
+    uuid = StringField()
 
     def __init__(self):
+        super(CardGame, self).__init__()
         self.decks = [
             deck.WinningDeck(),
             deck.WinningDeck(),
@@ -16,6 +26,7 @@ class CardGame(object):
             deck.LosingDeck()]
         random.shuffle(self.decks)
         self.uuid = uuid4().hex
+        self.save()
 
     def serialize(self):
         serialized = {}
@@ -27,6 +38,12 @@ class CardGame(object):
     def __hash__(self):
         return hash(self.uuid)
 
+    def __str__(self):
+        return '<CardGame {}>'.format(self.uuid)
+
+    def __repr__(self):
+        return '<CardGame {}>'.format(self.uuid)
+
     def make_play(self, deck):
         chosen = self.decks[deck].pick_card()
         if chosen is None:
@@ -37,10 +54,15 @@ class CardGame(object):
                 adj = "risky"
             else:
                 adj = "safe"
-            dal.save_game_outcome(adj)
-            deleted = dal.delete_game_by_uuid(self.uuid)
-            if deleted:
-                print "it was deleted!"
-            else:
-                print "it was not deleted!"
+            # dal.save_game_outcome(adj)
+            # deleted = dal.delete_game_by_uuid(self.uuid)
+            # if deleted:
+            #     print "it was deleted!"
+            # else:
+            #     print "it was not deleted!"
+            # print dal.get_game_by_uuid(self.uuid)
+            return None
         return chosen
+
+    # def delete(self):
+    #     dal.delete_game_by_uuid(self.uuid)
